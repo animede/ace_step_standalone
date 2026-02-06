@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 ACE-Step 1.5 Music Generator</h1>
+            <p>AIで音楽を生成 - テーマを入力するだけで、歌詞・タグ・音楽を自動生成</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- 左側: 入力パネル -->
+            <div class="input-panel">
+                <!-- テーマ入力 -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">💡</span>
+                        <h2>テーマ / シナリオ</h2>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="theme" placeholder="例: 夜空を見上げて願いを込める魔法少女の物語&#10;&#10;または: 明るいポップな夏の恋愛ソング"></textarea>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" id="lyrics-btn" onclick="generateLyrics()">
+                            📝 AI作詞
+                        </button>
+                        <button class="btn btn-secondary" id="tags-btn" onclick="generateTags()">
+                            🏷️ タグ生成
+                        </button>
+                        <button class="btn btn-primary" id="auto-btn" onclick="autoGenerate()">
+                            🚀 AUTO（一括生成）
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 歌詞エディタ -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">📝</span>
+                        <h2>歌詞 / Lyrics</h2>
+                    </div>
+                    <div class="lyrics-editor">
+                        <div class="structure-tags">
+                            <span class="structure-tag" onclick="insertTag('[intro]')">[intro]</span>
+                            <span class="structure-tag" onclick="insertTag('[verse]')">[verse]</span>
+                            <span class="structure-tag" onclick="insertTag('[chorus]')">[chorus]</span>
+                            <span class="structure-tag" onclick="insertTag('[bridge]')">[bridge]</span>
+                            <span class="structure-tag" onclick="insertTag('[outro]')">[outro]</span>
+                            <span class="structure-tag" onclick="insertTag('[inst]')">[inst]</span>
+                        </div>
+                        <div class="form-group textarea-container">
+                            <textarea id="lyrics" placeholder="[intro]&#10;[inst]&#10;&#10;[verse]&#10;星の海に浮かぶ願いが&#10;夜空を駆け巡る&#10;&#10;[chorus]&#10;輝く未来へ..."
+                            ></textarea>
+                            <div class="resize-handle" title="ドラッグでサイズ変更">▽</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側: 設定と出力 -->
+            <div class="output-panel">
+                <!-- タグ/ジャンル -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">🎵</span>
+                        <h2>タグ / ジャンル</h2>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="prompt" rows="3" placeholder="例: Neo-Soul, warm, organic, female voice, emotional, piano, strings"></textarea>
+                    </div>
+                    <div class="genre-suggestions">
+                        <span class="genre-suggestion" onclick="addGenre('pop')">Pop</span>
+                        <span class="genre-suggestion" onclick="addGenre('rock')">Rock</span>
+                        <span class="genre-suggestion" onclick="addGenre('jazz')">Jazz</span>
+                        <span class="genre-suggestion" onclick="addGenre('electronic')">Electronic</span>
+                        <span class="genre-suggestion" onclick="addGenre('R&B')">R&B</span>
+                        <span class="genre-suggestion" onclick="addGenre('hip-hop')">Hip-Hop</span>
+                        <span class="genre-suggestion" onclick="addGenre('classical')">Classical</span>
+                        <span class="genre-suggestion" onclick="addGenre('folk')">Folk</span>
+                    </div>
+                </div>
+
+                <!-- 音楽パラメータ -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">🎛️</span>
+                        <h2>音楽パラメータ</h2>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="language">言語</label>
+                            <select id="language">
+                                <option value="ja" selected>日本語</option>
+                                <option value="en">English</option>
+                                <option value="zh">中文</option>
+                                <option value="ko">한국어</option>
+                                <option value="es">Español</option>
+                                <option value="fr">Français</option>
+                                <option value="de">Deutsch</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="key_scale">調</label>
+                            <select id="key_scale">
+                                <option value="">自動</option>
+                                <optgroup label="C">
+                                    <option value="C major">C major</option>
+                                    <option value="C minor">C minor</option>
+                                    <option value="C# major">C# major</option>
+                                    <option value="C# minor">C# minor</option>
+                                    <option value="Cb major">Cb major</option>
+                                    <option value="Cb minor">Cb minor</option>
+                                </optgroup>
+                                <optgroup label="D">
+                                    <option value="D major">D major</option>
+                                    <option value="D minor">D minor</option>
+                                    <option value="D# major">D# major</option>
+                                    <option value="D# minor">D# minor</option>
+                                    <option value="Db major">Db major</option>
+                                    <option value="Db minor">Db minor</option>
+                                </optgroup>
+                                <optgroup label="E">
+                                    <option value="E major">E major</option>
+                                    <option value="E minor">E minor</option>
+                                    <option value="Eb major">Eb major</option>
+                                    <option value="Eb minor">Eb minor</option>
+                                </optgroup>
+                                <optgroup label="F">
+                                    <option value="F major">F major</option>
+                                    <option value="F minor">F minor</option>
+                                    <option value="F# major">F# major</option>
+                                    <option value="F# minor">F# minor</option>
+                                </optgroup>
+                                <optgroup label="G">
+                                    <option value="G major">G major</option>
+                                    <option value="G minor">G minor</option>
+                                    <option value="G# major">G# major</option>
+                                    <option value="G# minor">G# minor</option>
+                                    <option value="Gb major">Gb major</option>
+                                    <option value="Gb minor">Gb minor</option>
+                                </optgroup>
+                                <optgroup label="A">
+                                    <option value="A major">A major</option>
+                                    <option value="A minor">A minor</option>
+                                    <option value="A# major">A# major</option>
+                                    <option value="A# minor">A# minor</option>
+                                    <option value="Ab major">Ab major</option>
+                                    <option value="Ab minor">Ab minor</option>
+                                </optgroup>
+                                <optgroup label="B">
+                                    <option value="B major">B major</option>
+                                    <option value="B minor">B minor</option>
+                                    <option value="Bb major">Bb major</option>
+                                    <option value="Bb minor">Bb minor</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="time_signature">拍子</label>
+                            <select id="time_signature">
+                                <option value="">自動</option>
+                                <option value="4" selected>4/4（4ビート）</option>
+                                <option value="3">3/4（ワルツ）</option>
+                                <option value="2">2/4（マーチ）</option>
+                                <option value="6">6/8（6ビート）</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="audio_duration">長さ（秒）</label>
+                            <input type="number" id="audio_duration" min="10" max="300" value="150" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="bpm">BPM</label>
+                            <input type="number" id="bpm" min="30" max="300" value="120" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="inference_steps">STEP</label>
+                            <input type="number" id="inference_steps" min="1" max="200" value="60" step="1" title="推論ステップ数（多いほど高品質・遅い）">
+                        </div>
+                    </div>
+
+                    <!-- 詳細設定（アコーディオン） -->
+                    <div class="accordion" id="advanced-accordion">
+                        <div class="accordion-header" onclick="toggleAccordion('advanced-accordion')">
+                            <span>🔧 詳細設定</span>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="guidance_scale">CFG</label>
+                                    <input type="number" id="guidance_scale" min="0" max="20" value="3.0" step="0.1" title="Classifier-Free Guidance（高いほどプロンプトに忠実）">
+                                </div>
+                                <div class="form-group">
+                                    <label for="seed">SEED</label>
+                                    <input type="number" id="seed" placeholder="ランダム" title="シード値（空=ランダム）">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="batch_size">バッチサイズ</label>
+                                    <select id="batch_size">
+                                        <option value="1" selected>1</option>
+                                        <option value="2">2</option>
+                                        <option value="4">4</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="audio_format">出力形式</label>
+                                    <select id="audio_format">
+                                        <option value="mp3" selected>MP3</option>
+                                        <option value="wav">WAV</option>
+                                        <option value="flac">FLAC</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="thinking" checked>
+                                    Thinking Mode（高品質・遅い）
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 生成ボタン -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="icon">🎵</span>
+                        <h2>アクション</h2>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-success" id="generate-btn" onclick="generateMusic()">
+                            ✨ 音楽を生成
+                        </button>
+                        <button class="btn btn-secondary" onclick="resetForm()">
+                            🔄 リセット
+                        </button>
+                    </div>
+
+                    <!-- ステータスメッセージ -->
+                    <div class="status-message" id="status-message"></div>
+
+                    <!-- 進捗バー -->
+                    <div class="progress-container" id="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <div class="progress-text" id="progress-text">処理中...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 再生エリア（メインコンテンツの外） -->
+        <div class="player-section" id="player-section">
+            <div class="container">
+                <div class="card player-card">
+                    <div class="card-header">
+                        <span class="icon">🎧</span>
+                        <h2>再生</h2>
+                    </div>
+
+                    <!-- オーディオプレイヤー -->
+                    <div class="audio-player-content" id="audio-player">
+                        <!-- ビジュアライザー -->
+                        <div class="visualizer-container" id="visualizer-container">
+                            <canvas id="visualizer" width="600" height="150"></canvas>
+                        </div>
+                        <audio id="audio" controls crossorigin="anonymous"></audio>
+                        <div class="action-buttons" style="margin-top: 15px;">
+                            <a class="btn btn-secondary" id="download-btn" href="#" download>
+                                ⬇️ ダウンロード
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="server-info" id="server-info">
+                <span class="info-item" id="model-info">🤖 モデル: 確認中...</span>
+                <span class="info-item" id="queue-info">📊 キュー: -</span>
+                <span class="info-item" id="avg-time-info">⏱️ 平均: -</span>
+            </div>
+            <p>ACE-Step 1.5 Standalone Web App</p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
