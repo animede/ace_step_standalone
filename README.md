@@ -115,6 +115,11 @@ python main.py [オプション]
 | `--llm-model MODEL` | LLMモデル名 | `--llm-model gpt-4o` |
 | `--no-reload` | 開発時のリロードを無効化 | `--no-reload` |
 
+**補足**:
+
+- `--ace-url` を指定した場合、`--ace-host` / `--ace-port` の指定は不要です（`--ace-url` が優先されます）
+- `--llm-url` を指定した場合、`--llm-host` / `--llm-port` の指定は不要です（`--llm-url` が優先されます）
+
 #### 使用例
 
 ```bash
