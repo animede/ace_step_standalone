@@ -1,7 +1,7 @@
 """
 ACE-Step Standalone App Configuration
 """
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
 import argparse
 
@@ -33,6 +33,11 @@ def parse_args():
 
 class Settings(BaseSettings):
     """アプリケーション設定"""
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+    )
     
     # ACE-Step API設定
     ace_step_api_url: str = "http://localhost:8001"
@@ -56,10 +61,6 @@ class Settings(BaseSettings):
     default_audio_duration: int = 60
     default_bpm: int = 120
     default_language: str = "ja"
-    
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
     
     def apply_args(self, args):
         """コマンドライン引数を適用"""
