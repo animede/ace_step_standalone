@@ -2,7 +2,7 @@
 
 AIで音楽を生成するスタンドアロンWebアプリケーション
 
-## � インストール
+## 📦 インストール
 
 ### 必要環境
 
@@ -40,7 +40,7 @@ cp .env.example .env
 # .envファイルを編集して設定をカスタマイズ
 ```
 
-## �🚀 クイックスタート
+## 🚀 クイックスタート
 
 ### 1. 仮想環境の有効化
 
@@ -148,6 +148,7 @@ ace_step_standalone/
 ├── .env                 # 環境変数
 ├── start.sh             # 起動スクリプト
 ├── README.md            # このファイル
+├── README_EN.md         # English README
 ├── docs/
 │   ├── EASY_MUSIC_GUIDE.md              # かんたん音楽生成ガイド
 │   ├── ACE_STEP_1_5_STANDALONE_SPEC.md  # 設計仕様書
@@ -216,6 +217,3 @@ ace_step_standalone/
 ## 📄 ライセンス
 
 MIT License
-
-
-## 🌐 nginxリバースプロキシ設定
