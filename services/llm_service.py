@@ -78,14 +78,40 @@ class LLMService:
         api_key: str = None,
         model: str = None
     ):
-        self.base_url = base_url or settings.openai_base_url
-        self.api_key = api_key or settings.openai_api_key
-        self.model = model or settings.openai_chat_model
-        
-        self.client = AsyncOpenAI(
-            base_url=self.base_url,
-            api_key=self.api_key
-        )
+        # NOTE:
+        # `llm_service` is instantiated at import time. CLI args / .env may be
+        # applied later (e.g., when running via uvicorn which re-imports
+        # `main:app`). Therefore, we keep only optional overrides here and
+        # lazily create (or recreate) the client per-request based on the
+        # latest `settings`.
+        self._base_url_override = base_url
+        self._api_key_override = api_key
+        self._model_override = model
+
+        self._client: Optional[AsyncOpenAI] = None
+        self._client_base_url: Optional[str] = None
+        self._client_api_key: Optional[str] = None
+
+    def _effective_base_url(self) -> str:
+        return self._base_url_override or settings.openai_base_url
+
+    def _effective_api_key(self) -> str:
+        return self._api_key_override or settings.openai_api_key
+
+    def _effective_model(self) -> str:
+        return self._model_override or settings.openai_chat_model
+
+    def _ensure_client(self) -> None:
+        base_url = self._effective_base_url()
+        api_key = self._effective_api_key()
+        if (
+            self._client is None
+            or self._client_base_url != base_url
+            or self._client_api_key != api_key
+        ):
+            self._client = AsyncOpenAI(base_url=base_url, api_key=api_key)
+            self._client_base_url = base_url
+            self._client_api_key = api_key
     
     async def chat(
         self,
@@ -106,13 +132,15 @@ class LLMService:
         Returns:
             LLMの応答
         """
+        self._ensure_client()
+
         messages = [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_message}
         ]
         
-        completion = await self.client.chat.completions.create(
-            model=self.model,
+        completion = await self._client.chat.completions.create(
+            model=self._effective_model(),
             messages=messages,
             max_tokens=max_tokens,
             temperature=temperature

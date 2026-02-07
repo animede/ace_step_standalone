@@ -1,9 +1,30 @@
 """
 ACE-Step Standalone App Configuration
 """
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
 import argparse
+
+
+_BASE_DIR = Path(__file__).resolve().parent
+
+
+def _find_env_file() -> str | None:
+    """Find a .env file in likely locations.
+
+    Priority:
+    1) ace_step_standalone/.env
+    2) gm_song/.env (parent directory)
+    """
+    candidates = [
+        _BASE_DIR / ".env",
+        _BASE_DIR.parent / ".env",
+    ]
+    for candidate in candidates:
+        if candidate.exists() and candidate.is_file():
+            return str(candidate)
+    return None
 
 
 def parse_args():
@@ -28,14 +49,16 @@ def parse_args():
     # その他
     parser.add_argument("--no-reload", action="store_true", help="自動リロードを無効化")
     
-    return parser.parse_args()
+    # uvicorn等から起動された場合、未知の引数が混ざることがあるため無視する
+    args, _unknown = parser.parse_known_args()
+    return args
 
 
 class Settings(BaseSettings):
     """アプリケーション設定"""
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=_find_env_file(),
         env_file_encoding="utf-8",
     )
     
@@ -83,7 +106,15 @@ class Settings(BaseSettings):
         
         # LLM API設定
         if args.llm_url:
-            self.openai_base_url = args.llm_url
+            from urllib.parse import urlparse, urlunparse
+            parsed = urlparse(args.llm_url)
+            path = parsed.path
+            if not path or path == "/":
+                path = "/v1"
+            # Keep query/fragment as-is (usually empty)
+            self.openai_base_url = urlunparse(
+                (parsed.scheme, parsed.netloc, path, parsed.params, parsed.query, parsed.fragment)
+            )
         elif args.llm_host or args.llm_port:
             from urllib.parse import urlparse
             parsed = urlparse(self.openai_base_url)

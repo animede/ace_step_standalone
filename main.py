@@ -9,8 +9,9 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import logging
 
-from config import settings
+from config import settings, apply_cli_args
 from routers import generate, lyrics
 
 # =============================================================================
@@ -37,6 +38,26 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # テンプレート
 templates = Jinja2Templates(directory="templates")
+
+
+# =============================================================================
+# Logging
+# =============================================================================
+
+logger = logging.getLogger("uvicorn.error")
+
+
+# =============================================================================
+# Startup
+# =============================================================================
+
+@app.on_event("startup")
+async def log_base_urls_on_startup():
+    # uvicornがモジュールを再importするケースでも、CLI引数を確実に反映
+    apply_cli_args()
+    logger.info("ACE-Step API Base URL: %s", settings.ace_step_api_url)
+    logger.info("LLM API Base URL: %s", settings.openai_base_url)
+    logger.info("LLM Model: %s", settings.openai_chat_model)
 
 
 # =============================================================================

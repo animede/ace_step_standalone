@@ -134,6 +134,16 @@ function showAudioPlayer(url, metadata = {}) {
     
     // ビジュアライザーを初期化
     initVisualizer();
+
+    // 生成後は自動再生（ブラウザの制限で失敗する場合あり）
+    setTimeout(() => {
+        const playPromise = audio.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(() => {
+                showStatus('🎧 再生を開始できませんでした。再生ボタンを押してください。', 'info');
+            });
+        }
+    }, 0);
 }
 
 /**
@@ -391,7 +401,10 @@ async function generateLyrics() {
             if (result.recommended_duration) {
                 const duration = Math.min(180, Math.max(10, result.recommended_duration));
                 document.getElementById('audio_duration').value = duration;
-                document.getElementById('duration_value').textContent = duration;
+                const durationValueEl = document.getElementById('duration_value');
+                if (durationValueEl) {
+                    durationValueEl.textContent = duration;
+                }
             }
             
             showStatus('✅ 歌詞を生成しました！', 'success');

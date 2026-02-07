@@ -314,7 +314,7 @@ header p {
 /* Player Section */
 .player-section {
     display: none;
-    padding: 20px 0;
+    padding: 0 0 24px 0;
     background: linear-gradient(180deg, transparent 0%, rgba(99, 102, 241, 0.1) 100%);
 }
 
@@ -323,8 +323,8 @@ header p {
 }
 
 .player-card {
-    max-width: 800px;
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
 }
 
 /* Audio Player Content */

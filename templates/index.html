@@ -13,6 +13,30 @@
             <p>AIで音楽を生成 - テーマを入力するだけで、歌詞・タグ・音楽を自動生成</p>
         </header>
 
+        <!-- 再生エリア（ヘッダー直下・横幅一杯） -->
+        <div class="player-section" id="player-section">
+            <div class="card player-card">
+                <div class="card-header">
+                    <span class="icon">🎧</span>
+                    <h2>再生</h2>
+                </div>
+
+                <!-- オーディオプレイヤー -->
+                <div class="audio-player-content" id="audio-player">
+                    <!-- ビジュアライザー -->
+                    <div class="visualizer-container" id="visualizer-container">
+                        <canvas id="visualizer" width="600" height="150"></canvas>
+                    </div>
+                    <audio id="audio" controls crossorigin="anonymous"></audio>
+                    <div class="action-buttons" style="margin-top: 15px;">
+                        <a class="btn btn-secondary" id="download-btn" href="#" download>
+                            ⬇️ ダウンロード
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="main-grid">
             <!-- 左側: 入力パネル -->
             <div class="input-panel">
@@ -258,32 +282,6 @@
                             <div class="progress-fill" id="progress-fill"></div>
                         </div>
                         <div class="progress-text" id="progress-text">処理中...</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 再生エリア（メインコンテンツの外） -->
-        <div class="player-section" id="player-section">
-            <div class="container">
-                <div class="card player-card">
-                    <div class="card-header">
-                        <span class="icon">🎧</span>
-                        <h2>再生</h2>
-                    </div>
-
-                    <!-- オーディオプレイヤー -->
-                    <div class="audio-player-content" id="audio-player">
-                        <!-- ビジュアライザー -->
-                        <div class="visualizer-container" id="visualizer-container">
-                            <canvas id="visualizer" width="600" height="150"></canvas>
-                        </div>
-                        <audio id="audio" controls crossorigin="anonymous"></audio>
-                        <div class="action-buttons" style="margin-top: 15px;">
-                            <a class="btn btn-secondary" id="download-btn" href="#" download>
-                                ⬇️ ダウンロード
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>
