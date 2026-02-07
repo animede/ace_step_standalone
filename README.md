@@ -103,8 +103,8 @@ python main.py [オプション]
 | `--ace-port PORT` | ACE-Step APIポート | `--ace-port 8001` |
 | `--ace-url URL` | ACE-Step API完全URL | `--ace-url http://YOUR_ACE_HOST:8001` |
 | `--llm-host HOST` | LLM APIホスト | `--llm-host YOUR_LLM_HOST` |
-| `--llm-port PORT` | LLM APIポート | `--llm-port 64650` |
-| `--llm-url URL` | LLM API完全URL | `--llm-url http://localhost:11434/v1` |
+| `--llm-port PORT` | LLM APIポート（Ollamaのデフォルトは11434） | `--llm-port 11434` |
+| `--llm-url URL` | LLM API完全URL（例: Ollama） | `--llm-url http://localhost:11434/v1` |
 | `--llm-model MODEL` | LLMモデル名 | `--llm-model gpt-4o` |
 | `--no-reload` | 開発時のリロードを無効化 | `--no-reload` |
 
@@ -117,11 +117,11 @@ python main.py
 # ACE-Step APIを別サーバーに接続
 python main.py --ace-host YOUR_ACE_HOST --ace-port 8001
 
-# LLM APIを指定して起動
+# LLM APIを指定して起動（例: Ollama）
 python main.py --llm-url http://localhost:11434/v1 --llm-model llama3
 
 # 複数オプションを組み合わせ
-python main.py --port 9000 --ace-url http://YOUR_ACE_HOST:8001 --llm-host YOUR_LLM_HOST --llm-port 64650
+python main.py --port 9000 --ace-url http://YOUR_ACE_HOST:8001 --llm-host YOUR_LLM_HOST --llm-port 11434
 ```
 
 **優先順位**: コマンドラインオプション > .envファイル > デフォルト値
@@ -229,17 +229,4 @@ server {
 ```
 
 > **Note**: WebSocketは使用していないため、WS設定は不要です
-
-## 📝 更新履歴
-
-- **v1.1** (2026-02-06)
-  - 音楽パラメータ追加: STEP, CFG, SEED
-  - 長さ・BPMを入力ボックスに変更
-  - 調の選択肢を34キーに拡張（#/b対応）
-  - 拍子の選択肢を拡張
-  - ビジュアライザー機能追加
-  - 再生エリアを独立セクションに分離
-  - 音声プロキシAPI追加（CORS対応）
-  - サーバーモデル情報表示機能追加
-  - 歌詞エリアのリサイズ機能追加
 

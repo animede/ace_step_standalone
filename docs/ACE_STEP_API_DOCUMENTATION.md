@@ -1,7 +1,7 @@
 # ACE-Step 1.5 REST API 完全仕様書
 
-**Version:** 1.1  
-**Date:** 2026年2月6日  
+**Version:** 1.0  
+**Date:** 2026年2月7日  
 **Base URL:** `http://localhost:8001`
 
 > **✅ Standalone Webアプリ開発完了**: このドキュメントに基づいて `ace_step_standalone` Webアプリを開発しました。  

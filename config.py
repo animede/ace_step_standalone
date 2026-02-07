@@ -20,9 +20,9 @@ def parse_args():
     parser.add_argument("--ace-url", type=str, default=None, help="ACE-Step API URL (例: http://YOUR_ACE_HOST:8001)")
     
     # LLM API設定
-    parser.add_argument("--llm-host", type=str, default=None, help="LLM APIホスト (default: YOUR_LLM_HOST)")
-    parser.add_argument("--llm-port", type=int, default=None, help="LLM APIポート (default: 64650)")
-    parser.add_argument("--llm-url", type=str, default=None, help="LLM API URL (例: http://YOUR_LLM_HOST:64650/v1)")
+    parser.add_argument("--llm-host", type=str, default=None, help="LLM APIホスト (default: localhost)")
+    parser.add_argument("--llm-port", type=int, default=None, help="LLM APIポート (default: 11434 / Ollama)")
+    parser.add_argument("--llm-url", type=str, default=None, help="LLM API URL (例: http://YOUR_LLM_HOST:11434/v1 / Ollama)")
     parser.add_argument("--llm-model", type=str, default=None, help="LLMモデル名")
     
     # その他
@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     ace_step_api_key: Optional[str] = None
     
     # LLM設定（作詞/タグ生成用）
-    openai_base_url: str = "http://YOUR_LLM_HOST:64650/v1"
+    openai_base_url: str = "http://localhost:11434/v1"
     openai_api_key: str = "YOUR_OPENAI_API_KEY"
     openai_chat_model: str = "gemma3:latest"
     
