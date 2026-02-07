@@ -217,32 +217,5 @@ ace_step_standalone/
 
 MIT License
 
+
 ## 🌐 nginxリバースプロキシ設定
-
-本番環境でnginxを使用する場合の設定例：
-
-```nginx
-server {
-    listen 80;
-    server_name your-domain.com;
-
-    location / {
-        proxy_pass http://127.0.0.1:8888;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        
-        # 音声ストリーミング対応
-        proxy_buffering off;
-        proxy_read_timeout 300s;
-        
-        # 音声ファイルサイズ上限
-        client_max_body_size 100M;
-    }
-}
-```
-
-> **Note**: WebSocketは使用していないため、WS設定は不要です
-
