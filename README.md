@@ -69,6 +69,12 @@ http://localhost:8888
 - **ACE-Step 1.5 API Server** が `localhost:8001` で稼働していること
 - **LLM API** （作詞/タグ生成用）が利用可能であること
 
+#### 🌐 REST API Server
+
+```bash
+uv run acestep-api
+```
+
 ## 🔧 設定
 
 ### 環境変数（.envファイル）
