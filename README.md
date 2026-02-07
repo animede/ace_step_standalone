@@ -80,7 +80,7 @@ http://localhost:8888
 ACE_STEP_API_URL=http://localhost:8001
 
 # LLM API
-OPENAI_BASE_URL=http://YOUR_LLM_HOST:64650/v1
+OPENAI_BASE_URL=http://XXX.XXX.XXX.XXX:YYYYY/v1
 OPENAI_CHAT_MODEL=gemma3:latest
 
 # サーバー
