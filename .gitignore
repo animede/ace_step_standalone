@@ -22,6 +22,10 @@ ENV/
 *.log
 server.log
 
+# Generated audio outputs
+*.mp3
+*.wav
+
 # OS
 .DS_Store
 Thumbs.db

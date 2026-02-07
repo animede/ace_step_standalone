@@ -224,7 +224,7 @@ Authorization: Bearer your-api-key
 
 タスク結果をバッチでクエリします。
 
-> ℹ️ **パラメータ名**: `task_id_list` または `task_ids`（配列形式）が使用可能です。
+> ℹ️ **パラメータ名**: この環境では `task_id_list`（配列）が確実に動作します。`task_ids` は実装差分により `data: []` が返る場合があります。
 
 #### リクエスト
 
