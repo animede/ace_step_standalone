@@ -18,7 +18,7 @@
 7. [パフォーマンス](#7-パフォーマンス)
 8. [REST API 詳細仕様](#8-rest-api-詳細仕様)
 9. [独立Webアプリ実装ガイド](#9-独立webアプリ実装ガイド)
-11. [参考リンク](#11-参考リンク)
+10. [参考リンク](#11-参考リンク)
 
 ---
 
@@ -1578,7 +1578,7 @@ class ACEStepClient {
 
 ---
 
-## 11. 参考リンク
+## 10. 参考リンク
 
 - [ACE-Step GitHub](https://github.com/ace-step/ACE-Step)
 - [ACE-Step Technical Report](https://arxiv.org/abs/2506.00045)
