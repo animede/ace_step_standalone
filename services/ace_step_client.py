@@ -116,10 +116,21 @@ class AceStepClient:
         api_key: str = None,
         timeout: float = 60.0
     ):
-        self.base_url = (base_url or settings.ace_step_api_url).rstrip("/")
-        self.api_key = api_key or settings.ace_step_api_key
+        # NOTE: base_url / api_key overrides are stored separately.
+        # When not provided, the values are read from `settings` lazily
+        # so that CLI args applied after import are respected.
+        self._base_url_override = base_url
+        self._api_key_override = api_key
         self.timeout = timeout
         self._client = None
+
+    @property
+    def base_url(self) -> str:
+        return (self._base_url_override or settings.ace_step_api_url).rstrip("/")
+
+    @property
+    def api_key(self) -> str | None:
+        return self._api_key_override or settings.ace_step_api_key
     
     def _get_client(self) -> httpx.Client:
         """HTTPクライアントを取得"""

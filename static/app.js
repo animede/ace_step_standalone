@@ -71,6 +71,45 @@ async function apiRequest(endpoint, method = 'GET', data = null) {
 // UI Helper Functions
 // =============================================================================
 
+function _normalizeModelName(modelName) {
+    return (modelName || '').toString().trim().toLowerCase();
+}
+
+function getRecommendedStepsForModel(modelName) {
+    const m = _normalizeModelName(modelName);
+    if (!m) return null;
+
+    // User requirement: turbo=8, base=50
+    if (m.includes('turbo')) return 8;
+    if (m.includes('base')) return 50;
+    // Treat other non-turbo variants similarly to base unless explicitly handled
+    if (m.includes('sft')) return 50;
+    return null;
+}
+
+function applyRecommendedSteps(modelName) {
+    const stepInput = document.getElementById('inference_steps');
+    if (!stepInput) return;
+
+    const recommended = getRecommendedStepsForModel(modelName);
+    if (recommended == null) return;
+
+    // Force overwrite mode: always set recommended STEP when model changes.
+    stepInput.value = recommended;
+
+    stepInput.title = `推論ステップ数（モデル推奨: ${recommended}）`;
+}
+
+function getEffectiveRequestedModel() {
+    const modelSelect = document.getElementById('model');
+    const requested = modelSelect?.value || '';
+    return requested || (window.__aceStepDefaultModel || '');
+}
+
+function refreshStepsFromModelSelection() {
+    applyRecommendedSteps(getEffectiveRequestedModel());
+}
+
 /**
  * ステータスメッセージを表示
  */
@@ -218,9 +257,12 @@ function drawVisualizer() {
         const barCount = 64;
         const barWidth = (width / barCount) * 0.8;
         const barGap = (width / barCount) * 0.2;
+
+        // 高音域の上位1/4は表示しない（低〜中域に寄せる）
+        const maxBin = Math.max(1, Math.floor(dataArray.length * 0.75));
         
         for (let i = 0; i < barCount; i++) {
-            const dataIndex = Math.floor(i * dataArray.length / barCount);
+            const dataIndex = Math.floor(i * maxBin / barCount);
             const barHeight = (dataArray[dataIndex] / 255) * height * 0.9;
             
             const x = i * (barWidth + barGap);
@@ -323,6 +365,13 @@ function addGenre(genre) {
 function toggleAccordion(id) {
     const accordion = document.getElementById(id);
     accordion.classList.toggle('open');
+
+    const isOpen = accordion.classList.contains('open');
+    const toggles = document.querySelectorAll(`[data-accordion-target="${id}"]`);
+    toggles.forEach((toggle) => {
+        toggle.classList.toggle('open', isOpen);
+        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
 }
 
 /**
@@ -580,6 +629,12 @@ async function generateMusic() {
             batch_size: parseInt(document.getElementById('batch_size').value),
             audio_format: document.getElementById('audio_format').value,
         };
+
+        // モデル（空=サーバーデフォルト）
+        const model = document.getElementById('model')?.value;
+        if (model) {
+            params.model = model;
+        }
         
         // キースケール
         const keyScale = document.getElementById('key_scale').value;
@@ -622,7 +677,21 @@ async function generateMusic() {
                     // CORS回避のため、プロキシ経由のURLに変換
                     const audioUrl = convertAudioUrl(result.url);
                     showAudioPlayer(audioUrl, result.metas || {});
-                    showStatus('音楽を生成しました！', 'success');
+
+                    const requestedModel = params.model || '';
+                    const usedDitModel = result.dit_model || '';
+                    const usedLmModel = result.lm_model || '';
+                    const modelParts = [];
+                    if (requestedModel) modelParts.push(`要求: ${requestedModel}`);
+                    if (usedDitModel) modelParts.push(`使用(DiT): ${usedDitModel}`);
+                    if (usedLmModel) modelParts.push(`使用(LM): ${usedLmModel}`);
+
+                    showStatus(
+                        modelParts.length > 0
+                            ? `音楽を生成しました！ (${modelParts.join(' / ')})`
+                            : '音楽を生成しました！',
+                        'success'
+                    );
                 }
                 
                 hideProgress();
@@ -666,6 +735,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // サーバー情報を取得して表示
     loadServerInfo();
+
+    // モデル選択が変わったら推奨STEPを反映
+    const modelSelect = document.getElementById('model');
+    if (modelSelect) {
+        modelSelect.addEventListener('change', () => {
+            refreshStepsFromModelSelection();
+        });
+    }
 });
 
 /**
@@ -677,20 +754,42 @@ async function loadServerInfo() {
         const modelResult = await apiRequest('/api/models');
         if (modelResult.success) {
             const modelName = modelResult.default_model || 'unknown';
+            window.__aceStepDefaultModel = modelName;
             const modelDisplay = modelName.replace('acestep-', '').replace('-', ' ');
             const isTurbo = modelName.includes('turbo');
             
             const modelEl = document.getElementById('model-info');
             modelEl.innerHTML = `🤖 モデル: <strong>${modelDisplay}</strong>${isTurbo ? ' ⚡' : ''}`;
             modelEl.title = `フルネーム: ${modelName}${isTurbo ? '\nTurboモデル: STEP 8推奨' : '\nBaseモデル: STEP 60推奨'}`;
-            
-            // Turboモデルの場合、STEPのデフォルトを調整
-            if (isTurbo) {
-                const stepInput = document.getElementById('inference_steps');
-                if (stepInput && stepInput.value == 60) {
-                    stepInput.value = 8;
-                    stepInput.title = '推論ステップ数（Turboモデル: 8推奨）';
+
+            // デフォルト/選択モデルに応じて推奨STEPを反映
+            refreshStepsFromModelSelection();
+
+            // モデルセレクタを更新（存在する場合のみ）
+            const modelSelect = document.getElementById('model');
+            if (modelSelect) {
+                const previousValue = modelSelect.value;
+                const models = Array.isArray(modelResult.models) ? modelResult.models : [];
+
+                // 一旦クリアして「自動（デフォルト）」を入れる
+                modelSelect.innerHTML = '';
+                modelSelect.add(new Option('自動（デフォルト）', ''));
+
+                models.forEach((m) => {
+                    const name = (typeof m === 'string') ? m : (m?.name || m?.model || m?.id || '');
+                    if (!name) return;
+                    modelSelect.add(new Option(name, name));
+                });
+
+                // ユーザーが既に選んでいた値があれば維持（なければ自動）
+                if (previousValue) {
+                    modelSelect.value = previousValue;
+                } else {
+                    modelSelect.value = '';
                 }
+
+                // モデル一覧反映後にもう一度推奨STEPを更新
+                refreshStepsFromModelSelection();
             }
         } else {
             document.getElementById('model-info').innerHTML = '🤖 モデル: <span style="color: var(--error-color);">接続エラー</span>';
@@ -705,7 +804,7 @@ async function loadServerInfo() {
         }
     } catch (e) {
         console.error('Failed to load server info:', e);
-        document.getElementById('model-info').innerHTML = '🤖 モデル: <span style="color: var(--error-color);">接続エラー</span>';
+        document.getElementById('model-info').innerHTML = `🤖 モデル: <span style="color: var(--error-color);">接続エラー: ${e.message}</span>`;
     }
 }
 

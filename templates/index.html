@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style.css?v=20260209">
 </head>
 <body>
     <div class="container">
@@ -114,6 +114,36 @@
                     <div class="card-header">
                         <span class="icon">🎛️</span>
                         <h2>音楽パラメータ</h2>
+                        <button
+                            type="button"
+                            class="header-accordion-toggle"
+                            onclick="toggleAccordion('model-settings-accordion')"
+                            data-accordion-target="model-settings-accordion"
+                            aria-expanded="false"
+                            title="モデル/Thinking 設定"
+                        >
+                            ⚙️ 設定 <span class="accordion-icon">▼</span>
+                        </button>
+                    </div>
+
+                    <!-- モデル/Thinking（ヘッダー右端のアコーディオン） -->
+                    <div class="accordion" id="model-settings-accordion">
+                        <div class="accordion-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="model">モデル</label>
+                                    <select id="model">
+                                        <option value="" selected>自動（デフォルト）</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="thinking" checked>
+                                        Thinking Mode（高品質・遅い）
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="form-row">
@@ -247,12 +277,6 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label>
-                                    <input type="checkbox" id="thinking" checked>
-                                    Thinking Mode（高品質・遅い）
-                                </label>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -297,6 +321,6 @@
         </footer>
     </div>
 
-    <script src="/static/app.js"></script>
+    <script src="/static/app.js?v=20260209"></script>
 </body>
 </html>
