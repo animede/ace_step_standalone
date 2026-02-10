@@ -13,9 +13,7 @@ AIで音楽を生成するスタンドアロンWebアプリケーション
 ### 1. リポジトリをクローン（または配置）
 
 ```bash
-cd /home/animede/gm_song
 git clone <repository_url> ace_step_standalone
-# または既存のディレクトリを使用
 cd ace_step_standalone
 ```
 
@@ -45,7 +43,7 @@ cp .env.example .env
 ### 1. 仮想環境の有効化
 
 ```bash
-cd /home/animede/gm_song/ace_step_standalone
+cd ace_step_standalone
 source .venv/bin/activate
 ```
 
@@ -75,6 +73,8 @@ http://localhost:8888
 ```bash
 uv run acestep-api
 ```
+
+補足: `acestep` をローカル環境に導入済みの場合、このリポジトリ内のスクリプト（例: `./run_api_server_lowvram.sh`）で起動する運用もできます。
 
 ## 🔧 設定
 
@@ -145,8 +145,11 @@ ace_step_standalone/
 ├── main.py              # FastAPIメインアプリ
 ├── config.py            # 設定
 ├── requirements.txt     # 依存パッケージ
-├── .env                 # 環境変数
+├── .env.example         # 環境変数サンプル
+├── .env                 # 環境変数（任意）
 ├── start.sh             # 起動スクリプト
+├── run_api_server_lowvram.sh      # ACE-Step APIサーバ起動（低VRAM向け）
+├── run_api_server_multimodel.sh   # ACE-Step APIサーバ起動（複数モデル）
 ├── README.md            # このファイル
 ├── README_EN.md         # English README
 ├── docs/

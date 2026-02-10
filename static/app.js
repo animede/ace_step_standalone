@@ -804,7 +804,7 @@ async function loadServerInfo() {
         }
     } catch (e) {
         console.error('Failed to load server info:', e);
-        document.getElementById('model-info').innerHTML = `🤖 モデル: <span style="color: var(--error-color);">接続エラー: ${e.message}</span>`;
+        document.getElementById('model-info').innerHTML = '🤖 モデル: <span style="color: var(--error-color);">接続エラー</span>';
     }
 }
 

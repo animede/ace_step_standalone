@@ -1625,8 +1625,8 @@ class ACEStepClient {
 
 ### パス
 
-アプリ: `/home/animede/gm_song/ace_step_standalone/`  
-README: `ace_step_standalone/README.md`
+アプリ: `ace_step_standalone/`  
+README: `../README.md`
 
 ---
 

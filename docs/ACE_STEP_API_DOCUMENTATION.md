@@ -5,7 +5,7 @@
 **Base URL:** `http://localhost:8001`
 
 > **✅ Standalone Webアプリ開発完了**: このドキュメントに基づいて `ace_step_standalone` Webアプリを開発しました。  
-> 詳細は `/home/animede/gm_song/ace_step_standalone/README.md` を参照。
+> 詳細は [../README.md](../README.md) を参照。
 
 ---
 
@@ -1391,8 +1391,8 @@ app.add_middleware(
 
 ### 詳細
 
-パス: `/home/animede/gm_song/ace_step_standalone/`  
-README: `ace_step_standalone/README.md`
+パス: `ace_step_standalone/`  
+README: [../README.md](../README.md)
 
 ---
 

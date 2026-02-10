@@ -13,9 +13,7 @@ A standalone web application for AI music generation.
 ### 1. Clone (or place) the repository
 
 ```bash
-cd /home/animede/gm_song
 git clone <repository_url> ace_step_standalone
-# or use an existing directory
 cd ace_step_standalone
 ```
 
@@ -44,7 +42,7 @@ cp .env.example .env
 ### 1. Activate the virtual environment
 
 ```bash
-cd /home/animede/gm_song/ace_step_standalone
+cd ace_step_standalone
 source .venv/bin/activate
 ```
 
@@ -74,6 +72,8 @@ http://localhost:8888
 ```bash
 uv run acestep-api
 ```
+
+Note: If you already have `acestep` installed locally, you can also start the API server using the scripts in this repository (e.g. `./run_api_server_lowvram.sh`).
 
 ## 🔧 Configuration
 
@@ -144,8 +144,11 @@ ace_step_standalone/
 ├── main.py              # FastAPI app entry
 ├── config.py            # Settings / CLI parsing
 ├── requirements.txt     # Python dependencies
-├── .env                 # Environment variables
+├── .env.example         # Environment variables template
+├── .env                 # Environment variables (optional)
 ├── start.sh             # Startup script
+├── run_api_server_lowvram.sh      # Start ACE-Step API server (low VRAM)
+├── run_api_server_multimodel.sh   # Start ACE-Step API server (multi-model)
 ├── README.md            # Japanese README
 ├── README_EN.md         # English README
 ├── docs/

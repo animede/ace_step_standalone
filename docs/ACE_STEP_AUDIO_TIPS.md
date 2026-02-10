@@ -1185,7 +1185,7 @@ async function loadServerInfo() {
 
 *このドキュメントは ACE-Step 1.5 API の実践的な使用ガイドです。*
 *詳細なAPIリファレンスは [ACE_STEP_API_DOCUMENTATION.md](ACE_STEP_API_DOCUMENTATION.md) を参照してください。*
-*Standalone Webアプリは [ace_step_standalone/README.md](ace_step_standalone/README.md) を参照してください。*
+*Standalone Webアプリは [../README.md](../README.md) を参照してください。*
 
 ---
 

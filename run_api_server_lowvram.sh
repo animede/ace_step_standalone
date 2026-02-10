@@ -55,28 +55,6 @@ HOST="${ACESTEP_API_HOST:-0.0.0.0}"
 PORT="${ACESTEP_API_PORT:-8001}"
 LOG_LEVEL="${ACESTEP_API_LOG_LEVEL:-debug}"
 
-# Optional CLI overrides (kept minimal on purpose)
-while [[ $# -gt 0 ]]; do
-	case "$1" in
-		--host|--server-name|-server-name)
-			HOST="${2:-}"
-			shift 2
-			;;
-		--port)
-			PORT="${2:-}"
-			shift 2
-			;;
-		--log-level)
-			LOG_LEVEL="${2:-}"
-			shift 2
-			;;
-		*)
-			echo "[WARN] Unknown arg ignored: $1" >&2
-			shift
-			;;
-	esac
-done
-
 exec python -m uvicorn acestep.api_server:app \
 	--host "$HOST" \
 	--port "$PORT" \

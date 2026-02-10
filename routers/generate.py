@@ -7,7 +7,6 @@ from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 import asyncio
 import httpx
-import json
 
 from services.ace_step_client import ace_step_client, TaskResult, SUPPORTED_LANGUAGES, SUPPORTED_KEY_SCALES
 from config import settings
@@ -144,6 +143,7 @@ async def get_task_status(task_id: str):
         
         if status == 1:
             # 成功
+            import json
             result_json = task_data.get("result", "[]")
             if isinstance(result_json, str):
                 results = json.loads(result_json)
@@ -157,39 +157,7 @@ async def get_task_status(task_id: str):
         
         elif status == 2:
             # 失敗
-            raw = task_data.get("result", "Unknown error")
-
-            # `result` が JSON 文字列の配列として返る実装がある
-            parsed: Any = None
-            if isinstance(raw, str):
-                try:
-                    parsed = json.loads(raw)
-                except Exception:
-                    parsed = None
-            else:
-                parsed = raw
-
-            # よくある失敗形: [{"file":"", "status":2, ...}] のみで理由が無い
-            if isinstance(parsed, list) and parsed:
-                try:
-                    has_empty_file_failed = any(
-                        (isinstance(x, dict) and x.get("status") == 2 and not x.get("file"))
-                        for x in parsed
-                    )
-                except Exception:
-                    has_empty_file_failed = False
-
-                if has_empty_file_failed:
-                    error = (
-                        "ACE-Step API側で生成が失敗しました。"
-                        "Pro環境のログに `CUDA error: device-side assert triggered` が出ている場合、"
-                        "LM(=thinking)実行時のGPUエラーなので、まず `thinking` をOFFにして再試行してください。"
-                        f" (detail={raw})"
-                    )
-                else:
-                    error = str(raw)
-            else:
-                error = str(raw)
+            error = task_data.get("result", "Unknown error")
         
         return TaskStatusResponse(
             task_id=task_id,
@@ -343,13 +311,9 @@ async def proxy_audio(path: str):
     try:
         # ACE-Step APIのURLを構築
         audio_url = f"{settings.ace_step_api_url}/v1/audio?path={path}"
-
-        headers: Dict[str, str] = {}
-        if settings.ace_step_api_key:
-            headers["Authorization"] = f"Bearer {settings.ace_step_api_key}"
         
-        async with httpx.AsyncClient(trust_env=False) as client:
-            response = await client.get(audio_url, timeout=60.0, headers=headers)
+        async with httpx.AsyncClient() as client:
+            response = await client.get(audio_url, timeout=60.0)
             
             if response.status_code != 200:
                 raise HTTPException(status_code=response.status_code, detail="Audio not found")
